@@ -1,29 +1,24 @@
 var express = require('express'),
     app = express(),
-    multer = require('multer');
-
-var Hashids = require("hashids"),
-    hashids = new Hashids("this is my salt", 6);
-
-var redis = require("redis"),
+    multer = require('multer'),
+    Hashids = require("hashids"),
+    hashids = new Hashids("this is my salt", 6),
+    redis = require("redis"),
     client = redis.createClient();
+
+app.set('views', __dirname + '/views')
+app.set('view engine', 'jade')
+app.use(express.static(__dirname + '/static'));
+app.use(multer({
+    dest: './tmp/',
+    rename: function (fieldname, filename) {
+        return filename.replace(/\W+/g, '-').toLowerCase() + Date.now();
+    }
+}));
 
 client.on("error", function (err) {
         console.log("REDIS Error " + err);
 });
-
-app.set('views', __dirname + '/views')
-app.set('view engine', 'jade')
-
-// app.configure(function () {
-    app.use(multer({
-        dest: './tmp/',
-        rename: function (fieldname, filename) {
-            return filename.replace(/\W+/g, '-').toLowerCase() + Date.now();
-        }
-    }));
-    app.use(express.static(__dirname + '/static'));
-// });
 
 app.get('/', function(req,res) {
     res.render('index')
@@ -56,20 +51,7 @@ app.post('/upload', function (req, res) {
 
 });
 
-app.get('/shot/:id', function(req,res) {
-    // client.hgetall(req.params.id,function(er,c) { console.log(c); });
-    
-    client.hget(req.params.id,'path',function(er,c) {
-        res.sendfile(c);
-    });
-
-});
-
 app.get('/:id', function(req,res) {
-    // client.hgetall(req.params.id,function(er,c) { console.log(c); });
-    // client.hget(req.params.id,'path',function(er,c) {
-    //     res.sendfile(c);
-    // });
 
     var eid = req.params.id;
 
@@ -82,6 +64,16 @@ app.get('/:id', function(req,res) {
     });
     
 });
+
+
+app.get('/shot/:id', function(req,res) {
+    
+    client.hget(req.params.id,'path',function(er,c) {
+        res.sendfile(c);
+    });
+
+});
+
 
 
 var server = app.listen(3000, function () {
