@@ -1,8 +1,5 @@
-doctype html
-html(lang="en")
-  head
-    title TempSHOT
-  body
+extends layout
+block content
     form#uploadForm(enctype='multipart/form-data', action='/upload', method='post')
       input(type='file', name='shot')
     script(src='//code.jquery.com/jquery-1.11.0.min.js')
