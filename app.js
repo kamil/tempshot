@@ -74,8 +74,8 @@ app.get('/shot/:id', function(req,res) {
 
 });
 
-
-
-var server = app.listen(3000, function () {
+app.listen(3000, function () {
     console.log('listening on port %d', server.address().port);
-});
+}); 
+
+module.exports = app;

@@ -7,6 +7,11 @@
     "hashids": "^0.3.3",
     "jade": "^1.3.1",
     "multer": "0.x",
-    "redis": "^0.10.1"
+    "nodeunit": "^0.8.7",
+    "redis": "^0.10.1",
+    "supertest": "^0.12.0"
+  },
+  "scripts": {
+    "test": "mocha"
   }
 }
