@@ -1,3 +1,5 @@
+"use strict";
+
 var express = require('express'),
     app = express(),
     multer = require('multer'),
@@ -6,8 +8,8 @@ var express = require('express'),
     redis = require("redis"),
     client = redis.createClient();
 
-app.set('views', __dirname + '/views')
-app.set('view engine', 'jade')
+app.set('views', __dirname + '/views');
+app.set('view engine', 'jade');
 app.use(express.static(__dirname + '/static'));
 app.use(multer({
     dest: './tmp/',
@@ -21,13 +23,13 @@ client.on("error", function (err) {
 });
 
 app.get('/', function(req,res) {
-    res.render('index')
+    res.render('index');
 });
 
 app.post('/upload', function (req, res) {
 
 
-    file = req.files.shot;
+    var file = req.files.shot;
 
     client.incr('counter',function(err,index) {
        var new_id = hashids.encrypt(index);
@@ -75,7 +77,7 @@ app.get('/shot/:id', function(req,res) {
 });
 
 app.listen(3000, function () {
-    console.log('listening on port %d', server.address().port);
+    console.log('listening on port %d', this.address().port);
 }); 
 
 module.exports = app;
