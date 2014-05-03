@@ -58,10 +58,14 @@ app.get('/:id', function(req,res) {
     var eid = req.params.id;
 
     client.incr('views-'+eid,function(err, viewCount ) {
-        
-        res.render('shot', {
-            shot : '/shot/' + eid,
-            viewCount : viewCount
+        client.sadd('users-'+eid,req.ip,function(err, wyn) {
+            client.scard('users-'+eid,function( err, userCount ) {        
+                res.render('shot', {
+                    shot : '/shot/' + eid,
+                    viewCount : viewCount,
+                    userCount : userCount
+                });
+            });
         });
     });
     
