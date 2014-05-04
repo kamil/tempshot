@@ -1,7 +1,7 @@
 extends layout
 block content
     form(enctype='multipart/form-data', action='/upload', method='post')
-      input(type='file', name='shot')
-      input(type='number', name='howlong')
+        input(type='file', name='shot')
+        input(type='number', name='howlong')
     script(src='//code.jquery.com/jquery-1.11.0.min.js')
-    script(src='//main.js')
+    script(src='/main.js')

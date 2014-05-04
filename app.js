@@ -3,10 +3,14 @@
 var express = require('express'),
     app = express(),
     multer = require('multer'),
-    Hashids = require("hashids"),
-    hashids = new Hashids("this is my salt", 6),
     redis = require("redis"),
-    client = redis.createClient();
+    client = redis.createClient(),
+    Shot = require('./lib/shot');
+
+
+var shot = new Shot({
+    db: client
+})
 
 app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
@@ -31,25 +35,13 @@ app.post('/upload', function (req, res) {
 
     var file = req.files.shot;
 
-    client.incr('counter',function(err,index) {
-       var new_id = hashids.encrypt(index);
-       
-       client.hmset(new_id,{
-            "path" : file.path,
-            "extension" : file.extension,
-            "mimetype" : file.originalname 
-       },function() {
-
-        res.redirect(301, '/' + new_id);
-
-       });
-
-       console.log('new id',new_id);
-
-
-
+    shot.add({
+        "path" : file.path,
+        "extension" : file.extension,
+        "mimetype" : file.originalname 
+    },function(err,id) {
+        res.redirect(301, '/' + id);
     });
-
 
 });
 
@@ -57,27 +49,28 @@ app.get('/:id', function(req,res) {
 
     var eid = req.params.id;
 
-    client.incr('views-'+eid,function(err, viewCount ) {
-        client.sadd('users-'+eid,req.ip,function(err, wyn) {
-            client.scard('users-'+eid,function( err, userCount ) {        
-                res.render('shot', {
-                    shot : '/shot/' + eid,
-                    viewCount : viewCount,
-                    userCount : userCount
-                });
-            });
+    shot.view({
+
+        id : eid,
+        user_id : req.ip
+   
+    },function(err,counts) {
+   
+        res.render('shot', {
+            shot : '/shot/' + eid,
+            viewCount : counts.viewCount,
+            userCount : counts.userCount
         });
+   
     });
     
 });
 
 
 app.get('/shot/:id', function(req,res) {
-    
-    client.hget(req.params.id,'path',function(er,c) {
-        res.sendfile(c);
+    shot.getPath(req.params.id,function(path) {
+        res.sendfile(path);
     });
-
 });
 
 app.listen(3000, function () {
