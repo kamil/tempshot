@@ -11,7 +11,7 @@ var express = require('express'),
 
 var shot = new Shot({
     db: client
-})
+});
 
 app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
