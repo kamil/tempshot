@@ -5,6 +5,7 @@ var express = require('express'),
     multer = require('multer'),
     redis = require("redis"),
     client = redis.createClient(),
+    path = require('path'),
     Shot = require('./lib/shot');
 
 
@@ -68,8 +69,8 @@ app.get('/:id', function(req,res) {
 
 
 app.get('/shot/:id', function(req,res) {
-    shot.getPath(req.params.id,function(path) {
-        res.sendfile(path);
+    shot.getPath(req.params.id,function(imagePath) {
+        res.sendFile(path.join(__dirname,imagePath));
     });
 });
 
